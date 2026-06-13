@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur de Prix - Impression 3D</title>
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --surface: #ffffff;
+            --surface-alt: #f8f9fa;
+            --border: #dee2e6;
+            --text: #212529;
+            --text-secondary: #6c757d;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --danger: #dc3545;
+            --danger-hover: #c82333;
+            --success: #28a745;
+            --warning: #ffc107;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+            --radius: 8px;
+            --transition: 0.15s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header .logo {
+            font-size: 28px;
+        }
+        .header h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+        .header .version {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-left: auto;
+        }
+
+        /* ========== TABS ========== */
+        .tab-nav {
+            display: flex;
+            gap: 0;
+            background: var(--surface);
+            border-bottom: 2px solid var(--border);
+            padding: 0 24px;
+            position: sticky;
+            top: 64px;
+            z-index: 99;
+        }
+        .tab-btn {
+            padding: 14px 28px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab-btn:hover { color: var(--text); background: var(--surface-alt); }
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        .tab-btn .icon { font-size: 1.2rem; }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ========== CARDS ========== */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px 24px;
+            margin-bottom: 20px;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-header h2 .icon { font-size: 1.3rem; }
+
+        /* ========== FORM ELEMENTS ========== */
+        .form-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 120px;
+            flex: 1;
+        }
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .form-group input,
+        .form-group select {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color var(--transition);
+            background: var(--surface);
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+        .form-group input[type="number"] {
+            font-family: 'Consolas', 'Courier New', monospace;
+            text-align: right;
+        }
+
+        /* ========== BUTTONS ========== */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all var(--transition);
+            white-space: nowrap;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: var(--danger-hover); }
+        .btn-outline {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-outline:hover { background: var(--surface-alt); }
+        .btn-sm { padding: 4px 10px; font-size: 0.8rem; }
+        .btn-icon { padding: 6px 8px; min-width: 32px; justify-content: center; }
+
+        /* ========== TABLE ========== */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        table th, table td {
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        table th {
+            background: var(--surface-alt);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: var(--text-secondary);
+            position: sticky;
+            top: 0;
+        }
+        table tbody tr:hover { background: #f0f4ff; }
+        table tbody tr:last-child td { border-bottom: none; }
+        table .col-num { text-align: right; font-family: 'Consolas', 'Courier New', monospace; }
+        table .col-actions { text-align: center; width: 80px; }
+        .text-muted { color: var(--text-secondary); font-style: italic; }
+
+        /* ========== TOTALS ROW ========== */
+        .totals-row {
+            background: #e8f0fe !important;
+            font-weight: 700;
+            border-top: 2px solid var(--primary) !important;
+        }
+        .totals-row td {
+            padding: 12px 14px !important;
+            font-size: 0.95rem;
+        }
+
+        /* ========== CONFIG SECTIONS ========== */
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+        }
+        .config-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .config-item:last-child { border-bottom: none; }
+        .config-item .label {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .config-item .label .material-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .config-item input {
+            width: 110px;
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-align: right;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        .config-item input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+        .config-unit {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-left: 4px;
+            min-width: 35px;
+        }
+
+        /* ========== PRESETS ========== */
+        .preset-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .preset-chip {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .preset-chip:hover {
+            background: #e8f0fe;
+            border-color: var(--primary);
+        }
+        .preset-chip .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* ========== ALERTS ========== */
+        .alert {
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+        .alert-info { background: #e8f0fe; color: #1e40af; border: 1px solid #bfdbfe; }
+        .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+
+        /* ========== EMPTY STATE ========== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .form-row { flex-direction: column; }
+            .form-group { min-width: 100%; }
+            .config-grid { grid-template-columns: 1fr; }
+            .tab-btn { padding: 12px 16px; font-size: 0.85rem; }
+            .main-container { padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== HEADER ==================== -->
+    <div class="header">
+        <span class="logo">🖨️</span>
+        <h1>Calculateur de Prix - Impression 3D</h1>
+        <span class="version">v1.0</span>
+    </div>
+
+    <!-- ==================== TABS ==================== -->
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('calc')">
+            <span class="icon">🧮</span> Calcul
+        </button>
+        <button class="tab-btn" onclick="switchTab('config')">
+            <span class="icon">⚙️</span> Configuration
+        </button>
+    </div>
+
+    <!-- ==================== MAIN CONTAINER ==================== -->
+    <div class="main-container">
+
+        <!-- ========== TAB: CALCUL ========== -->
+        <div id="tab-calc" class="tab-content active">
+
+            <!-- FORMULAIRE AJOUT PIÈCE -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><span class="icon">➕</span> Ajouter une pièce</h2>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:2; min-width:160px;">
+                        <label>Nom de la pièce</label>
+                        <input type="text" id="pieceName" placeholder="ex: Support téléphone">
+                    </div>
+                    <div class="form-group">
+                        <label>Matériau</label>
+                        <select id="pieceMaterial">
+                            <option value="PLA">PLA</option>
+                            <option value="PETG">PETG</option>
+                            <option value="ABS">ABS</option>
+                            <option value="TPU">TPU</option>
+                            <option value="ASA">ASA</option>
+                            <option value="PC">PC</option>
+                            <option value="Nylon">Nylon</option>
+                            <option value="Resine">Résine</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Poids (g)</label>
+                        <input type="number" id="pieceWeight" placeholder="0" step="0.1" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Temps (h)</label>
+                        <input type="number" id="pieceTime" placeholder="0" step="0.01" min="0">
+                    </div>
+                    <div class="form-group" style="justify-content:flex-end;">
+                        <button class="btn btn-primary" onclick="addPiece()">➕ Ajouter</button>
+                    </div>
+                </div>
+
+                <!-- PIÈCES PRÉDÉFINIES -->
+                <div class="preset-chips" id="presetChips"></div>
+            </div>
+
+            <!-- TABLEAU DES PIÈCES -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><span class="icon">📋</span> Pièces ajoutées</h2>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn btn-outline btn-sm" onclick="clearAllPieces()">🗑️ Tout effacer</button>
+                        <button class="btn btn-outline btn-sm" onclick="exportPieces()">📤 Exporter</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pièce</th>
+                                <th>Matériau</th>
+                                <th class="col-num">Poids (g)</th>
+                                <th class="col-num">Temps (h)</th>
+                                <th class="col-num">Coût matière</th>
+                                <th class="col-num">Coût élec.</th>
+                                <th class="col-num">Marge</th>
+                                <th class="col-num">Prix total</th>
+                                <th class="col-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="piecesTableBody">
+                            <tr class="empty-row">
+                                <td colspan="9">
+                                    <div class="empty-state">
+                                        <div class="icon">📦</div>
+                                        <p>Aucune pièce ajoutée</p>
+                                        <p class="text-muted">Ajoutez une pièce via le formulaire ci-dessus</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot id="totalsFoot" style="display:none;"></tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- RÉCAPITULATIF -->
+            <div class="card" id="recapCard" style="display:none;">
+                <div class="card-header">
+                    <h2><span class="icon">📊</span> Récapitulatif</h2>
+                </div>
+                <div id="recapContent" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); gap:12px;"></div>
+            </div>
+        </div>
+
+        <!-- ========== TAB: CONFIGURATION ========== -->
+        <div id="tab-config" class="tab-content">
+
+            <!-- COÛTS MATIÈRES -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><span class="icon">🧱</span> Prix des matériaux (€/kg)</h2>
+                    <button class="btn btn-outline btn-sm" onclick="resetMaterialPrices()">↺ Défaut</button>
+                </div>
+                <div class="config-grid" id="materialPricesGrid">
+                    <!-- Généré dynamiquement -->
+                </div>
+            </div>
+
+            <!-- PARAMÈTRES MACHINE -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><span class="icon">🖨️</span> Paramètres machine</h2>
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <span class="label">⚡ Puissance moyenne (W)</span>
+                        <div style="display:flex;align-items:center;">
+                            <input type="number" id="cfgPower" step="1" min="0">
+                            <span class="config-unit">W</span>
+                        </div>
+                    </div>
+                    <div class="config-item">
+                        <span class="label">💰 Coût électricité (€/kWh)</span>
+                        <div style="display:flex;align-items:center;">
+                            <input type="number" id="cfgElecCost" step="0.001" min="0">
+                            <span class="config-unit">€/kWh</span>
+                        </div>
+                    </div>
+                    <div class="config-item">
+                        <span class="label">🔌 Puissance chauffage lit (W)</span>
+                        <div style="display:flex;align-items:center;">
+                            <input type="number" id="cfgBedPower" step="1" min="0">
+                            <span class="config-unit">W</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MARGE & FRAIS -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><span class="icon">💶</span> Marge & Frais</h2>
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <span class="label">📈 Marge (%)</span>
+                        <div style="display:flex;align-items:center;">
+                            <input type="number" id="cfgMargin" step="0.5" min="0">
+                            <span class="config-unit">%</span>
+                        </div>
+                    </div>
+                    <div class="config-item">
+                        <span class="label">🔧 Frais fixes par pièce (€)</span>
+                        <div style="display:flex;align-items:center;">
+                            <input type="number" id="cfgFixedCost" step="0.01" min="0">
+                            <span class="config-unit">€</span>
+                        </div>
+                    </div>
+                    <div class="config-item">
+                        <span class="label">⏱️ Coût horaire main d'œuvre (€/h)</span>
+                        <div style="display:flex;align-items:center;">
+                            <input type="number" id="cfglaborCost" step="0.5" min="0">
+                            <span class="config-unit">€/h</span>
+                        </div>
+                    </div>
+                    <div class="config-item">
+                        <span class="label">📦 Frais post-traitement (€)</span>
+                        <div style="display:flex;align-items:center;">
+                            <input type="number" id="cfgPostProcess" step="0.01" min="0">
+                            <span class="config-unit">€</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PIÈCES TYPES -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><span class="icon">📐</span> Pièces types (modèles prédéfinis)</h2>
+                </div>
+                <div class="alert alert-info">
+                    💡 Ces modèles sont utilisés dans l'onglet <strong>Calcul</strong> comme raccourcis. Vous pouvez les modifier ci-dessous.
+                </div>
+                <div id="presetPiecesConfig">
+                    <!-- Généré dynamiquement -->
+                </div>
+                <div style="margin-top:12px;display:flex;gap:8px;">
+                    <button class="btn btn-outline btn-sm" onclick="addPresetRow()">➕ Ajouter un modèle</button>
+                    <button class="btn btn-outline btn-sm" onclick="resetPresets()">↺ Réinitialiser</button>
+                </div>
+            </div>
+
+            <!-- SAUVEGARDE -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><span class="icon">💾</span> Sauvegarde</h2>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="saveAllConfig()">💾 Sauvegarder la configuration</button>
+                    <button class="btn btn-outline" onclick="loadAllConfig()">📂 Charger la configuration</button>
+                    <button class="btn btn-danger" onclick="resetAllConfig()">⚠️ Réinitialiser tout</button>
+                </div>
+                <div id="saveStatus" style="margin-top:8px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ==================== DONNÉES ====================
+    const DEFAULT_CONFIG = {
+        materialPrices: {
+            PLA: 22.00,
+            PETG: 25.00,
+            ABS: 20.00,
+            TPU: 35.00,
+            ASA: 30.00,
+            PC: 40.00,
+            Nylon: 45.00,
+            Resine: 50.00
+        },
+        power: 150,        // W
+        elecCost: 0.2062,  // €/kWh (tarif bleu EDF 2024)
+        bedPower: 120,     // W
+        margin: 30,        // %
+        fixedCost: 0.50,   // €
+        laborCost: 5.00,   // €/h
+        postProcess: 0.30  // €
+    };
+
+    const DEFAULT_PRESETS = [
+        { name: 'Benchy', material: 'PLA', weight: 13, time: 1.5 },
+        { name: 'Support téléphone', material: 'PETG', weight: 25, time: 2.0 },
+        { name: 'Figurine 10cm', material: 'PLA', weight: 35, time: 3.5 },
+        { name: 'Pièce mécanique', material: 'ABS', weight: 45, time: 4.0 },
+        { name: 'Coque téléphone', material: 'TPU', weight: 18, time: 1.8 },
+        { name: 'Crochet mural', material: 'PETG', weight: 8, time: 0.75 },
+        { name: 'Gear 20 dents', material: 'Nylon', weight: 12, time: 1.2 },
+        { name: 'Vase mode spiral', material: 'PLA', weight: 55, time: 5.0 }
+    ];
+
+    const MATERIAL_COLORS = {
+        PLA: '#4CAF50',
+        PETG: '#2196F3',
+        ABS: '#FF9800',
+        TPU: '#9C27B0',
+        ASA: '#607D8B',
+        PC: '#F44336',
+        Nylon: '#00BCD4',
+        Resine: '#E91E63'
+    };
+
+    let pieces = [];
+    let config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+    let presets = JSON.parse(JSON.stringify(DEFAULT_PRESETS));
+
+    // ==================== INITIALISATION ====================
+    function init() {
+        loadAllConfig();
+        renderPresetChips();
+        renderMaterialPrices();
+        renderPresetConfig();
+        renderPiecesTable();
+        bindConfigInputs();
+    }
+
+    function bindConfigInputs() {
+        document.getElementById('cfgPower').addEventListener('change', function() {
+            config.power = parseFloat(this.value) || 0;
+            saveAllConfig();
+            renderPiecesTable();
+        });
+        document.getElementById('cfgElecCost').addEventListener('change', function() {
+            config.elecCost = parseFloat(this.value) || 0;
+            saveAllConfig();
+            renderPiecesTable();
+        });
+        document.getElementById('cfgBedPower').addEventListener('change', function() {
+            config.bedPower = parseFloat(this.value) || 0;
+            saveAllConfig();
+            renderPiecesTable();
+        });
+        document.getElementById('cfgMargin').addEventListener('change', function() {
+            config.margin = parseFloat(this.value) || 0;
+            saveAllConfig();
+            renderPiecesTable();
+        });
+        document.getElementById('cfgFixedCost').addEventListener('change', function() {
+            config.fixedCost = parseFloat(this.value) || 0;
+            saveAllConfig();
+            renderPiecesTable();
+        });
+        document.getElementById('cfglaborCost').addEventListener('change', function() {
+            config.laborCost = parseFloat(this.value) || 0;
+            saveAllConfig();
+            renderPiecesTable();
+        });
+        document.getElementById('cfgPostProcess').addEventListener('change', function() {
+            config.postProcess = parseFloat(this.value) || 0;
+            saveAllConfig();
+            renderPiecesTable();
+        });
+    }
+
+    // ==================== CALCULS ====================
+    function calculatePiece(piece) {
+        const matPrice = config.materialPrices[piece.material] || 0; // €/kg
+        const weightKg = piece.weight / 1000;
+        const materialCost = matPrice * weightKg;
+
+        const totalPower = config.power + config.bedPower; // W
+        const powerKw = totalPower / 1000;
+        const elecCost = powerKw * piece.time * config.elecCost;
+
+        const laborCost = piece.time * config.laborCost;
+        const costBeforeMargin = materialCost + elecCost + config.fixedCost + laborCost + config.postProcess;
+        const marginAmount = costBeforeMargin * (config.margin / 100);
+        const totalPrice = costBeforeMargin + marginAmount;
+
+        return {
+            materialCost: round(materialCost),
+            elecCost: round(elecCost),
+            laborCost: round(laborCost),
+            costBeforeMargin: round(costBeforeMargin),
+            marginAmount: round(marginAmount),
+            totalPrice: round(totalPrice)
+        };
+    }
+
+    function round(val) {
+        return Math.round(val * 100) / 100;
+    }
+
+    // ==================== GESTION PIÈCES ====================
+    function addPiece() {
+        const nameEl = document.getElementById('pieceName');
+        const materialEl = document.getElementById('pieceMaterial');
+        const weightEl = document.getElementById('pieceWeight');
+        const timeEl = document.getElementById('pieceTime');
+
+        const name = nameEl.value.trim();
+        const material = materialEl.value;
+        const weight = parseFloat(weightEl.value);
+        const time = parseFloat(timeEl.value);
+
+        if (!name) {
+            alert('Veuillez entrer un nom de pièce.');
+            nameEl.focus();
+            return;
+        }
+        if (isNaN(weight) || weight <= 0) {
+            alert('Veuillez entrer un poids valide (en grammes).');
+            weightEl.focus();
+            return;
+        }
+        if (isNaN(time) || time <= 0) {
+            alert('Veuillez entrer un temps valide (en heures).');
+            timeEl.focus();
+            return;
+        }
+
+        pieces.push({
+            id: Date.now(),
+            name: name,
+            material: material,
+            weight: weight,
+            time: time
+        });
+
+        // Reset form
+        nameEl.value = '';
+        weightEl.value = '';
+        timeEl.value = '';
+        nameEl.focus();
+
+        savePieces();
+        renderPiecesTable();
+    }
+
+    function removePiece(id) {
+        if (confirm('Supprimer cette pièce ?')) {
+            pieces = pieces.filter(p => p.id !== id);
+            savePieces();
+            renderPiecesTable();
+        }
+    }
+
+    function clearAllPieces() {
+        if (pieces.length === 0) return;
+        if (confirm('Supprimer TOUTES les pièces ?')) {
+            pieces = [];
+            savePieces();
+            renderPiecesTable();
+        }
+    }
+
+    function addPresetPiece(presetIndex) {
+        const preset = presets[presetIndex];
+        pieces.push({
+            id: Date.now(),
+            name: preset.name,
+            material: preset.material,
+            weight: preset.weight,
+            time: preset.time
+        });
+        savePieces();
+        renderPiecesTable();
+    }
+
+    // ==================== RENDU TABLEAU ====================
+    function renderPiecesTable() {
+        const tbody = document.getElementById('piecesTableBody');
+        const tfoot = document.getElementById('totalsFoot');
+        const recapCard = document.getElementById('recapCard');
+        const recapContent = document.getElementById('recapContent');
+
+        if (pieces.length === 0) {
+            tbody.innerHTML = `
+                <tr class="empty-row">
+                    <td colspan="9">
+                        <div class="empty-state">
+                            <div class="icon">📦</div>
+                            <p>Aucune pièce ajoutée</p>
+                            <p class="text-muted">Ajoutez une pièce via le formulaire ci-dessus</p>
+                        </div>
+                    </td>
+                </tr>`;
+            tfoot.style.display = 'none';
+            recapCard.style.display = 'none';
+            return;
+        }
+
+        let totalMaterial = 0, totalElec = 0, totalLabor = 0, totalMargin = 0, totalPrice = 0, totalWeight = 0, totalTime = 0;
+
+        let rows = pieces.map((p, idx) => {
+            const calc = calculatePiece(p);
+            totalMaterial += calc.materialCost;
+            totalElec += calc.elecCost;
+            totalLabor += calc.laborCost;
+            totalMargin += calc.marginAmount;
+            totalPrice += calc.totalPrice;
+            totalWeight += p.weight;
+            totalTime += p.time;
+
+            return `
+                <tr>
+                    <td><strong>${escapeHtml(p.name)}</strong></td>
+                    <td>
+                        <span style="display:inline-flex;align-items:center;gap:6px;">
+                            <span class="material-dot" style="background:${MATERIAL_COLORS[p.material] || '#999'};width:10px;height:10px;border-radius:50%;display:inline-block;"></span>
+                            ${p.material}
+                        </span>
+                    </td>
+                    <td class="col-num">${p.weight.toFixed(1)}</td>
+                    <td class="col-num">${p.time.toFixed(2)}</td>
+                    <td class="col-num">${calc.materialCost.toFixed(2)} €</td>
+                    <td class="col-num">${calc.elecCost.toFixed(2)} €</td>
+                    <td class="col-num">${calc.marginAmount.toFixed(2)} €</td>
+                    <td class="col-num"><strong>${calc.totalPrice.toFixed(2)} €</strong></td>
+                    <td class="col-actions">
+                        <button class="btn btn-danger btn-icon btn-sm" onclick="removePiece(${p.id})" title="Supprimer">🗑️</button>
+                    </td>
+                </tr>`;
+        }).join('');
+
+        tbody.innerHTML = rows;
+
+        // Totaux
+        tfoot.style.display = '';
+        tfoot.innerHTML = `
+            <tr class="totals-row">
+                <td><strong>TOTAL</strong></td>
+                <td>${pieces.length} pièce(s)</td>
+                <td class="col-num"><strong>${totalWeight.toFixed(1)} g</strong></td>
+                <td class="col-num"><strong>${totalTime.toFixed(2)} h</strong></td>
+                <td class="col-num"><strong>${totalMaterial.toFixed(2)} €</strong></td>
+                <td class="col-num"><strong>${totalElec.toFixed(2)} €</strong></td>
+                <td class="col-num"><strong>${totalMargin.toFixed(2)} €</strong></td>
+                <td class="col-num"><strong>${totalPrice.toFixed(2)} €</strong></td>
+                <td></td>
+            </tr>`;
+
+        // Récapitulatif
+        recapCard.style.display = '';
+        recapContent.innerHTML = `
+            <div class="card" style="background:#f0fdf4;border:1px solid #bbf7d0;">
+                <div style="font-size:0.8rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;">Matière totale</div>
+                <div style="font-size:1.3rem;font-weight:700;color:#166534;">${totalMaterial.toFixed(2)} €</div>
+                <div style="font-size:0.8rem;color:var(--text-secondary);">${totalWeight.toFixed(1)} g</div>
+            </div>
+            <div class="card" style="background:#eff6ff;border:1px solid #bfdbfe;">
+                <div style="font-size:0.8rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;">Électricité</div>
+                <div style="font-size:1.3rem;font-weight:700;color:#1e40af;">${totalElec.toFixed(2)} €</div>
+                <div style="font-size:0.8rem;color:var(--text-secondary);">${totalTime.toFixed(2)} h</div>
+            </div>
+            <div class="card" style="background:#fefce8;border:1px solid #fef08a;">
+                <div style="font-size:0.8rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;">Main d'œuvre</div>
+                <div style="font-size:1.3rem;font-weight:700;color:#854d0e;">${totalLabor.toFixed(2)} €</div>
+                <div style="font-size:0.8rem;color:var(--text-secondary);">${config.laborCost.toFixed(2)} €/h</div>
+            </div>
+            <div class="card" style="background:#fdf2f8;border:1px solid #fbcfe8;">
+                <div style="font-size:0.8rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;">Marge totale</div>
+                <div style="font-size:1.3rem;font-weight:700;color:#9d174d;">${totalMargin.toFixed(2)} €</div>
+                <div style="font-size:0.8rem;color:var(--text-secondary);">${config.margin}%</div>
+            </div>
+            <div class="card" style="background:linear-gradient(135deg,#e8f0fe,#dbeafe);border:2px solid #2563eb;">
+                <div style="font-size:0.8rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;">💰 PRIX TOTAL</div>
+                <div style="font-size:1.6rem;font-weight:800;color:#1e3a5f;">${totalPrice.toFixed(2)} €</div>
+                <div style="font-size:0.8rem;color:var(--text-secondary);">${pieces.length} pièce(s)</div>
+            </div>`;
+    }
+
+    // ==================== PRESET CHIPS (onglet calcul) ====================
+    function renderPresetChips() {
+        const container = document.getElementById('presetChips');
+        container.innerHTML = '<span style="font-size:0.8rem;color:var(--text-secondary);margin-right:4px;">Raccourcis :</span>' +
+            presets.map((p, i) => `
+                <span class="preset-chip" onclick="addPresetPiece(${i})" title="${p.name}: ${p.weight}g, ${p.time}h, ${p.material}">
+                    <span class="dot" style="background:${MATERIAL_COLORS[p.material] || '#999'}"></span>
+                    ${p.name}
+                </span>
+            `).join('');
+    }
+
+    // ==================== CONFIGURATION ====================
+    function renderMaterialPrices() {
+        const grid = document.getElementById('materialPricesGrid');
+        grid.innerHTML = Object.entries(config.materialPrices).map(([mat, price]) => `
+            <div class="config-item">
+                <span class="label">
+                    <span class="material-dot" style="background:${MATERIAL_COLORS[mat] || '#999'}"></span>
+                    ${mat}
+                </span>
+                <div style="display:flex;align-items:center;">
+                    <input type="number" step="0.01" min="0" value="${price.toFixed(2)}"
+                           onchange="updateMaterialPrice('${mat}', this.value)" data-material="${mat}">
+                    <span class="config-unit">€/kg</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateMaterialPrice(material, value) {
+        config.materialPrices[material] = parseFloat(value) || 0;
+        saveAllConfig();
+        renderPiecesTable();
+    }
+
+    function renderPresetConfig() {
+        const container = document.getElementById('presetPiecesConfig');
+        container.innerHTML = presets.map((p, i) => `
+            <div class="form-row" style="margin-bottom:8px;align-items:center;padding:8px;background:var(--surface-alt);border-radius:6px;">
+                <div class="form-group" style="flex:2;">
+                    <label>Nom</label>
+                    <input type="text" value="${escapeHtml(p.name)}" onchange="updatePreset(${i},'name',this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Matériau</label>
+                    <select onchange="updatePreset(${i},'material',this.value)">
+                        ${Object.keys(config.materialPrices).map(m => `<option value="${m}" ${p.material === m ? 'selected' : ''}>${m}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Poids (g)</label>
+                    <input type="number" step="0.1" min="0" value="${p.weight}" onchange="updatePreset(${i},'weight',this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Temps (h)</label>
+                    <input type="number" step="0.01" min="0" value="${p.time}" onchange="updatePreset(${i},'time',this.value)">
+                </div>
+                <div class="form-group" style="flex:0;min-width:auto;">
+                    <button class="btn btn-danger btn-icon btn-sm" onclick="removePreset(${i})">🗑️</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updatePreset(index, field, value) {
+        if (field === 'weight' || field === 'time') {
+            presets[index][field] = parseFloat(value) || 0;
+        } else {
+            presets[index][field] = value;
+        }
+        saveAllConfig();
+        renderPresetChips();
+    }
+
+    function addPresetRow() {
+        presets.push({ name: 'Nouveau modèle', material: 'PLA', weight: 20, time: 1.0 });
+        saveAllConfig();
+        renderPresetConfig();
+        renderPresetChips();
+    }
+
+    function removePreset(index) {
+        if (confirm('Supprimer ce modèle prédéfini ?')) {
+            presets.splice(index, 1);
+            saveAllConfig();
+            renderPresetConfig();
+            renderPresetChips();
+        }
+    }
+
+    function resetPresets() {
+        if (confirm('Réinitialiser les modèles prédéfinis aux valeurs par défaut ?')) {
+            presets = JSON.parse(JSON.stringify(DEFAULT_PRESETS));
+            saveAllConfig();
+            renderPresetConfig();
+            renderPresetChips();
+        }
+    }
+
+    function resetMaterialPrices() {
+        if (confirm('Réinitialiser les prix des matériaux ?')) {
+            config.materialPrices = JSON.parse(JSON.stringify(DEFAULT_CONFIG.materialPrices));
+            saveAllConfig();
+            renderMaterialPrices();
+            renderPiecesTable();
+        }
+    }
+
+    function resetAllConfig() {
+        if (confirm('⚠️ Réinitialiser TOUTE la configuration (matériaux, machine, marge, modèles) ?')) {
+            config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+            presets = JSON.parse(JSON.stringify(DEFAULT_PRESETS));
+            pieces = [];
+            saveAllConfig();
+            savePieces();
+            renderAll();
+        }
+    }
+
+    function renderAll() {
+        renderMaterialPrices();
+        renderPresetConfig();
+        renderPresetChips();
+        renderPiecesTable();
+        refreshConfigInputs();
+    }
+
+    function refreshConfigInputs() {
+        document.getElementById('cfgPower').value = config.power;
+        document.getElementById('cfgElecCost').value = config.elecCost;
+        document.getElementById('cfgBedPower').value = config.bedPower;
+        document.getElementById('cfgMargin').value = config.margin;
+        document.getElementById('cfgFixedCost').value = config.fixedCost;
+        document.getElementById('cfglaborCost').value = config.laborCost;
+        document.getElementById('cfgPostProcess').value = config.postProcess;
+    }
+
+    // ==================== PERSISTANCE ====================
+    function savePieces() {
+        localStorage.setItem('imp3d_pieces', JSON.stringify(pieces));
+    }
+
+    function loadPieces() {
+        const data = localStorage.getItem('imp3d_pieces');
+        if (data) {
+            try { pieces = JSON.parse(data); } catch(e) { pieces = []; }
+        }
+    }
+
+    function saveAllConfig() {
+        const fullConfig = { config, presets };
+        localStorage.setItem('imp3d_config', JSON.stringify(fullConfig));
+        const status = document.getElementById('saveStatus');
+        if (status) {
+            status.innerHTML = '<div class="alert alert-success">✅ Configuration sauvegardée automatiquement</div>';
+            setTimeout(() => { status.innerHTML = ''; }, 2000);
+        }
+    }
+
+    function loadAllConfig() {
+        const data = localStorage.getItem('imp3d_config');
+        if (data) {
+            try {
+                const full = JSON.parse(data);
+                if (full.config) config = full.config;
+                if (full.presets) presets = full.presets;
+            } catch(e) {
+                config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+                presets = JSON.parse(JSON.stringify(DEFAULT_PRESETS));
+            }
+        }
+        loadPieces();
+        renderAll();
+        const status = document.getElementById('saveStatus');
+        if (status) {
+            status.innerHTML = '<div class="alert alert-info">📂 Configuration chargée</div>';
+            setTimeout(() => { status.innerHTML = ''; }, 2000);
+        }
+    }
+
+    function exportPieces() {
+        if (pieces.length === 0) {
+            alert('Aucune pièce à exporter.');
+            return;
+        }
+        let csv = 'Pièce;Matériau;Poids (g);Temps (h);Coût matière (€);Coût élec (€);Marge (€);Prix total (€)\n';
+        pieces.forEach(p => {
+            const calc = calculatePiece(p);
+            csv += `"${p.name}";${p.material};${p.weight.toFixed(1)};${p.time.toFixed(2)};${calc.materialCost.toFixed(2)};${calc.elecCost.toFixed(2)};${calc.marginAmount.toFixed(2)};${calc.totalPrice.toFixed(2)}\n`;
+        });
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'devis_impression3d.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // ==================== NAVIGATION ====================
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        if (tab === 'calc') {
+            document.querySelector('.tab-btn:first-child').classList.add('active');
+            document.getElementById('tab-calc').classList.add('active');
+            renderPiecesTable();
+            renderPresetChips();
+        } else {
+            document.querySelector('.tab-btn:last-child').classList.add('active');
+            document.getElementById('tab-config').classList.add('active');
+            renderMaterialPrices();
+            renderPresetConfig();
+            refreshConfigInputs();
+        }
+    }
+
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    // ==================== RACCOURCI CLAVIER ====================
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+            saveAllConfig();
+        }
+        // Entrée dans le champ nom ajoute la pièce
+        if (e.key === 'Enter' && document.activeElement && document.activeElement.id === 'pieceTime') {
+            e.preventDefault();
+            addPiece();
+        }
+    });
+
+    // ==================== DÉMARRAGE ====================
+    init();
+    </script>
+
+    <!-- ==================== COPYRIGHT ==================== -->
+    <footer style="text-align:center;padding:20px 24px;color:var(--text-secondary);font-size:0.8rem;border-top:1px solid var(--border);margin-top:24px;">
+        © 2026 <strong>Grégory HARGOUS</strong> — Tous droits réservés.
+    </footer>
+</body>
+</html>
