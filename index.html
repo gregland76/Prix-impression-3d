@@ -1047,7 +1047,7 @@
                 presets = JSON.parse(JSON.stringify(DEFAULT_PRESETS));
             }
         }
-        loadPieces();
+        loadPieces(); // Charger les pièces AVANT renderAll pour que le tableau les affiche
         renderAll();
         const status = document.getElementById('saveStatus');
         if (status) {
